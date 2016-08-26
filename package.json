@@ -1,0 +1,43 @@
+{
+  "name": "@zkat/protocols",
+  "version": "1.0.0",
+  "description": "Multi-type protocol-based polymorphism",
+  "main": "index.js",
+  "scripts": {
+    "test": "standard && nyc -- mocha --reporter spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zkat/protocols.git"
+  },
+  "keywords": [
+    "oop",
+    "util",
+    "object",
+    "oriented",
+    "protocols",
+    "multimethod",
+    "clojure",
+    "generic",
+    "functions",
+    "clos",
+    "polymorphism",
+    "impl",
+    "typeclass",
+    "traits"
+  ],
+  "author": "Kat Marchán <kzm@sykosomatic.org>",
+  "license": "CC0-1.0",
+  "bugs": {
+    "url": "https://github.com/zkat/protocols/issues"
+  },
+  "homepage": "https://github.com/zkat/protocols#readme",
+  "dependencies": {
+    "genfun": "^2.1.0"
+  },
+  "devDependencies": {
+    "mocha": "^3.0.2",
+    "nyc": "^8.1.0",
+    "standard": "^8.0.0"
+  }
+}
