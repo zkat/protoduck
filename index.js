@@ -34,16 +34,16 @@ var Protocol = module.exports = function (types, spec) {
 }
 
 function installMethodErrorMessage (proto, name) {
-  genfun.noApplicableMethod.add([proto[name]], (gf, thisArg, args) => {
-    let msg =
+  genfun.noApplicableMethod.add([proto[name]], function (gf, thisArg, args) {
+    var msg =
     'No ' + (proto.name || 'protocol') + ' impl for `' +
     name +
     '` found for arguments of types: (' +
-    [].map.call(args, (arg) => {
+    [].map.call(args, function (arg) {
       return (/\[object ([a-zA-Z0-9]+)\]/)
       .exec(({}).toString.call(arg))[1]
     }).join(', ') + ')'
-    let err = new Error(msg)
+    var err = new Error(msg)
     err.protocol = proto
     err.function = gf
     err.thisArg = thisArg
