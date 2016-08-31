@@ -33,6 +33,9 @@ describe('derivation', function () {
     })
     it('allows derivation if all functions have default impls', function () {
       assert.ok(protocol.isDerivable(Eq))
+      Eq([Number, Number])
+      assert.ok(Eq.eq(1, 1))
+      assert.ok(Eq.neq(2, 3))
     })
 
     var Show = protocol(['data', 'exemplar'], {
@@ -76,5 +79,17 @@ describe('implementations', function () {
     assert.throws(function () {
       Eq([Number, String, Number], { eq: function () {} })
     })
+  })
+  it('errors if an extra function is implemented', function () {
+    var Eq = protocol(['a'], { eq: ['a', 'a'] })
+    assert.throws(function () {
+      Eq([Number], { eq: function () {}, extra: function () {} })
+    }, /`extra` is not part of the protocol/i)
+  })
+  it('errors if a function without a default is not implemented', function () {
+    var Eq = protocol(['a'], { eq: ['a', 'a'] })
+    assert.throws(function () {
+      Eq([Number], { })
+    }, /Implementation for `eq` missing/)
   })
 })

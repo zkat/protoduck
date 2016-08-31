@@ -55,14 +55,16 @@ function installMethodErrorMessage (proto, name) {
 Protocol.isDerivable = function (proto) { return proto._derivable }
 
 Protocol.impl = function (proto, types, implementations) {
-  Object.keys(proto).forEach(function (name) {
-    if (name[0] !== '_' && !implementations[name]) {
-      throw new Error('Implementation for ' + name + ' missing')
-    }
-  })
   if (!implementations && proto._derivable) {
     implementations = proto._defaultImpls
   }
+  Object.keys(proto).forEach(function (name) {
+    if (name[0] !== '_' &&
+        !implementations[name] &&
+        !proto._defaultImpls[name]) {
+      throw new Error('Implementation for `' + name + '` missing')
+    }
+  })
   var pTypes = proto._types
   var gfTypes = proto._gfTypes
   if (types.length !== pTypes.length) {
@@ -72,9 +74,9 @@ Protocol.impl = function (proto, types, implementations) {
   }
   Object.keys(implementations).forEach(function (name) {
     if (!proto[name]) {
-      throw new Error(name + ' is not part of the protocol')
+      throw new Error('`' + name + '` is not part of the protocol')
     }
-    var fn = implementations[name]
+    var fn = implementations[name] || proto._defaultImpls[name]
     var methodTypes = calculateMethodTypes(name, proto, types)
     checkGfTypes(types, pTypes, gfTypes)
     proto[name].add(methodTypes, fn)
