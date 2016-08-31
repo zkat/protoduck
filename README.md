@@ -6,6 +6,13 @@ multiple arguments. See also: [Clojure
 protocols](http://clojure.org/reference/protocols) but on any number of types
 across all arguments of the individual functions.
 
+`protocols` is built on top of [`genfun`](npm.im/genfun), a fast,
+prototype-based multimethod library, but this is mostly all behind the scenes.
+
+On top of providing a nice, clear interface for defining interfaces, this
+module makes the best effort to verify both protocols and implementations and
+tries to provide clear, useful errors for common mistakes.
+
 ## Install
 
 `$ npm install @zkat/protocols`
