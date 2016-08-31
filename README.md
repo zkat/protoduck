@@ -79,11 +79,16 @@ Adds a new implementation to the given `proto` across `<types>`.
 API. The types in `<types>` will be used for defining specific methods using
 the function as the body.
 
+If a protocol is derivable -- that is, all its functions have default impls,
+then the `<implementations>` object can be omitted entirely, and the protocol
+will be automatically derived for the given `<types>`
+
 ##### Example
 
 ```javascript
 const Eq = protocol(['a', 'b'], {
-  eq: ['a', 'b']
+  eq: ['a', 'b', (a, b) => a === b],
+  neq: ['a', 'b', (a, b) => a !== b],
 })
 
 Eq([Number, Number], {
@@ -91,4 +96,6 @@ Eq([Number, Number], {
     return x === y
   }
 })
+
+Eq([String, String]) // Eq is derivable
 ```
