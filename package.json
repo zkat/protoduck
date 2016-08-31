@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Multi-type protocol-based polymorphism",
   "main": "index.js",
+  "files": [
+    "index.js"
+  ],
   "scripts": {
     "test": "standard && nyc -- mocha --reporter spec"
   },
