@@ -65,6 +65,11 @@ Protocol.impl = function (proto, types, implementations) {
   }
   var pTypes = proto._types
   var gfTypes = proto._gfTypes
+  if (types.length !== pTypes.length) {
+    throw new Error('protocol expects to be defined across ' +
+                     pTypes.length + ' types, but ' + types.length +
+                     ' were specified.')
+  }
   Object.keys(implementations).forEach(function (name) {
     if (!proto[name]) {
       throw new Error(name + ' is not part of the protocol')

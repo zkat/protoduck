@@ -66,4 +66,15 @@ describe('implementations', function () {
       Eq.eq(1, 1)
     }, /no protocol impl/i)
   })
+  it('errors if number of types don\'t match', function () {
+    var Eq = protocol(['a', 'b'], {
+      eq: ['a', 'b']
+    })
+    assert.throws(function () {
+      Eq([Number], { eq: function () {} })
+    })
+    assert.throws(function () {
+      Eq([Number, String, Number], { eq: function () {} })
+    })
+  })
 })
