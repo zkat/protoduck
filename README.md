@@ -1,4 +1,4 @@
-# Protocols [![Travis](https://img.shields.io/travis/zkat/protocols.svg)](https://travis-ci.org/zkat/protocols) [![npm](https://img.shields.io/npm/v/@zkat/genfun.svg)](https://npm.im/@zkat/genfun) [![npm](https://img.shields.io/npm/l/@zkat/genfun.svg)](https://npm.im/@zkat/genfun)
+# Protocols [![Travis](https://img.shields.io/travis/zkat/protocols.svg)](https://travis-ci.org/zkat/protocols) [![npm version](https://img.shields.io/npm/v/@zkat/protocols.svg)](https://npm.im/@zkat/protocols) [![license](https://img.shields.io/npm/l/@zkat/protocols.svg)](https://npm.im/@zkat/protocols)
 
 [`protocols`](https://github.com/zkat/protocols) is a JavaScript library for
 defining and implementing typeclass-like protocols that support dispatch across
@@ -46,7 +46,7 @@ Eq.equal(foo, foo) // Error: No protocol impl for `equal`
 
 ### API
 
-#### `protocol(<types>, <spec>)`
+#### <a name="protocol"></a> `protocol(<types>, <spec>)`
 
 Defines a new protocol across `<types>`, which will expect implementations for
 the functions specified in `<spec>`.
@@ -64,7 +64,7 @@ const Eq = protocol(['a', 'b'], {
 })
 ```
 
-#### <a name="implementation"></a> `proto(<types>, <implementations>)`
+#### <a name="impl"></a> `proto(<types>, <implementations>)`
 
 Adds a new implementation to the given `proto` across `<types>`.
 
