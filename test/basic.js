@@ -28,8 +28,8 @@ describe('types', function () {
 describe('derivation', function () {
   describe('isDerivable', function () {
     var Eq = protocol(['a', 'b'], {
-      eq: [['a', 'b'], function (a, b) { return a === b }],
-      neq: [['a', 'b'], function (a, b) { return !Eq.eq(a, b) }]
+      eq: ['a', 'b', function (a, b) { return a === b }],
+      neq: ['a', 'b', function (a, b) { return !Eq.eq(a, b) }]
     })
     it('allows derivation if all functions have default impls', function () {
       assert.ok(protocol.isDerivable(Eq))
@@ -37,7 +37,7 @@ describe('derivation', function () {
 
     var Show = protocol(['data', 'exemplar'], {
       show: ['data', 'exemplar'],
-      meh: [['data'], function () {}]
+      meh: ['data', function () {}]
     })
     it('disallows derivation if any of the gfs have no defaults', function () {
       assert.ok(!protocol.isDerivable(Show))

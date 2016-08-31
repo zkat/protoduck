@@ -13,14 +13,9 @@ var Protocol = module.exports = function (types, spec) {
   Object.keys(spec).forEach(function (name) {
     proto[name] = genfun()
     var gfTypes = spec[name]
-    // genfun specs can be either <types> or [<types>, <function>?]
-    if (typeof gfTypes[0] === 'object') {
-      if (gfTypes.length > 1) {
-        proto._defaultImpls[name] = gfTypes[1]
-      } else {
-        proto._derivable = false
-      }
-      gfTypes = gfTypes[0]
+    // genfun specs can have a fn attached to the end as a default impl
+    if (typeof gfTypes[gfTypes.length - 1] === 'function') {
+      proto._defaultImpls[name] = gfTypes.pop()
     } else {
       proto._derivable = false
     }
