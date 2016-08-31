@@ -66,7 +66,6 @@ Protocol.impl = function (proto, types, implementations) {
     }
   })
   var pTypes = proto._types
-  var gfTypes = proto._gfTypes
   if (types.length !== pTypes.length) {
     throw new Error('protocol expects to be defined across ' +
                      pTypes.length + ' types, but ' + types.length +
@@ -78,7 +77,6 @@ Protocol.impl = function (proto, types, implementations) {
     }
     var fn = implementations[name] || proto._defaultImpls[name]
     var methodTypes = calculateMethodTypes(name, proto, types)
-    checkGfTypes(types, pTypes, gfTypes)
     proto[name].add(methodTypes, fn)
   })
 }
@@ -87,9 +85,4 @@ function calculateMethodTypes (name, proto, types) {
   return proto._gfTypes[name].map(function (typeIdx) {
     return types[typeIdx]
   })
-}
-
-function checkGfTypes (implTypes, methodTypes, pTypes, gfTypes) {
-  // TODO - validity checks
-  return true
 }
