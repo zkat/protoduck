@@ -90,6 +90,6 @@ describe('implementations', function () {
     var Eq = protocol(['a'], { eq: ['a', 'a'] })
     assert.throws(function () {
       Eq([Number], { })
-    }, /Implementation for `eq` missing/)
+    }, /missing implementation for `eq`/i)
   })
 })

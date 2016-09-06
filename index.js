@@ -2,10 +2,11 @@
 
 var genfun = require('genfun')
 
-var Protocol = module.exports = function (types, spec) {
+var Protocol = module.exports = function (types, spec, opts) {
   var proto = function (types, impls) {
     return Protocol.impl(proto, types, impls)
   }
+  proto._metaobject = opts && opts.metaobject
   proto._types = types
   proto._defaultImpls = {}
   proto._gfTypes = {}
@@ -33,8 +34,10 @@ var Protocol = module.exports = function (types, spec) {
   return proto
 }
 
+Protocol.noImplFound = genfun.noApplicableMethod
+
 function installMethodErrorMessage (proto, name) {
-  genfun.noApplicableMethod.add([proto[name]], function (gf, thisArg, args) {
+  Protocol.noImplFound.add([proto[name]], function (gf, thisArg, args) {
     var msg =
     'No ' + (proto.name || 'protocol') + ' impl for `' +
     name +
@@ -62,7 +65,7 @@ Protocol.impl = function (proto, types, implementations) {
     if (name[0] !== '_' &&
         !implementations[name] &&
         !proto._defaultImpls[name]) {
-      throw new Error('Implementation for `' + name + '` missing')
+      throw new Error('missing implementation for `' + name + '`')
     }
   })
   var pTypes = proto._types
@@ -77,7 +80,11 @@ Protocol.impl = function (proto, types, implementations) {
     }
     var fn = implementations[name] || proto._defaultImpls[name]
     var methodTypes = calculateMethodTypes(name, proto, types)
-    proto[name].add(methodTypes, fn)
+    if (proto._metaobject) {
+      Protocol.meta.addMethod(proto._metaobject, proto, name, methodTypes, fn)
+    } else {
+      _metaAddMethod(null, proto, name, methodTypes, fn)
+    }
   })
 }
 
@@ -86,3 +93,14 @@ function calculateMethodTypes (name, proto, types) {
     return types[typeIdx]
   })
 }
+
+// MOP
+function _metaAddMethod (_mo, proto, name, methodTypes, fn) {
+  return proto[name].add(methodTypes, fn)
+}
+
+Protocol.meta = Protocol(['a'], {
+  addMethod: ['a']
+})
+
+Protocol.meta.addMethod.add([], _metaAddMethod)
