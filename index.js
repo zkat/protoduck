@@ -109,5 +109,6 @@ Protocol.meta = Protocol(['a'], {
   addMethod: ['a']
 })
 
-Protocol.meta.createGenfun.add([], _metaCreateGenfun)
-Protocol.meta.addMethod.add([], _metaAddMethod)
+// There's a bug in genfun that doesn't allow cnm() to [] methods
+Protocol.meta.createGenfun.add([Object], _metaCreateGenfun)
+Protocol.meta.addMethod.add([Object], _metaAddMethod)
