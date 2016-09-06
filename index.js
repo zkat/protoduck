@@ -12,7 +12,9 @@ var Protocol = module.exports = function (types, spec, opts) {
   proto._gfTypes = {}
   proto._derivable = true
   Object.keys(spec).forEach(function (name) {
-    proto[name] = genfun()
+    proto[name] = proto._metaobject
+    ? Protocol.meta.createGenfun(proto._metaobject, proto, name)
+    : _metaCreateGenfun(null, proto, name)
     var gfTypes = spec[name]
     // genfun specs can have a fn attached to the end as a default impl
     if (typeof gfTypes[gfTypes.length - 1] === 'function') {
@@ -95,12 +97,17 @@ function calculateMethodTypes (name, proto, types) {
 }
 
 // MOP
+function _metaCreateGenfun (_mo, proto, name) {
+  return genfun()
+}
 function _metaAddMethod (_mo, proto, name, methodTypes, fn) {
   return proto[name].add(methodTypes, fn)
 }
 
 Protocol.meta = Protocol(['a'], {
+  createGenfun: ['a'],
   addMethod: ['a']
 })
 
+Protocol.meta.createGenfun.add([], _metaCreateGenfun)
 Protocol.meta.addMethod.add([], _metaAddMethod)
