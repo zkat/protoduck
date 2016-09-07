@@ -37,7 +37,7 @@
   },
   "homepage": "https://github.com/zkat/protocols#readme",
   "dependencies": {
-    "genfun": "^2.1.0"
+    "genfun": "^3.0.0"
   },
   "devDependencies": {
     "mocha": "^3.0.2",
