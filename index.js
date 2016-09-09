@@ -20,8 +20,8 @@ var Protocol = module.exports = function (types, spec, opts) {
   proto._methodNames = Object.keys(spec)
   proto._methodNames.forEach(function (name) {
     proto[name] = proto._metaobject
-    ? Protocol.meta.createGenfun(proto._metaobject, proto, name)
-    : _metaCreateGenfun(null, proto, name)
+    ? Protocol.meta.createGenfun(proto._metaobject, proto, null, name)
+    : _metaCreateGenfun(null, proto, null, name)
     var gfTypes = spec[name]
     // genfun specs can have a fn attached to the end as a default impl
     if (typeof gfTypes[gfTypes.length - 1] === 'function') {
@@ -29,7 +29,6 @@ var Protocol = module.exports = function (types, spec, opts) {
     } else {
       proto._derivable = false
     }
-    installMethodErrorMessage(proto, name)
     proto._gfTypes[name] = gfTypes.map(function (typeId) {
       var idx = proto._types.indexOf(typeId)
       if (idx === -1) {
@@ -45,16 +44,21 @@ var Protocol = module.exports = function (types, spec, opts) {
 
 Protocol.noImplFound = genfun.noApplicableMethod
 
-function installMethodErrorMessage (proto, name) {
-  Protocol.noImplFound.add([proto[name]], function (gf, thisArg, args) {
+function typeName (obj) {
+  return (/\[object ([a-zA-Z0-9]+)\]/)
+  .exec(({}).toString.call(obj))[1]
+}
+
+function installMethodErrorMessage (proto, gf, target, name) {
+  Protocol.noImplFound.add([gf], function (gf, thisArg, args) {
     var msg =
     'No ' + (proto.name || 'protocol') + ' impl for `' +
     name +
     '` found for arguments of types: (' +
-    [].map.call(args, function (arg) {
-      return (/\[object ([a-zA-Z0-9]+)\]/)
-      .exec(({}).toString.call(arg))[1]
-    }).join(', ') + ')'
+    [].map.call(args, typeName).join(', ') + ')'
+    if (target) {
+      msg += ' and `this` type ' + typeName(thisArg)
+    }
     var err = new Error(msg)
     err.protocol = proto
     err.function = gf
@@ -128,7 +132,9 @@ function calculateMethodTypes (name, proto, types) {
 
 // MOP
 function _metaCreateGenfun (_mo, proto, target, name) {
-  return genfun()
+  var gf = genfun()
+  installMethodErrorMessage(proto, gf, target, name)
+  return gf
 }
 function _metaAddMethod (_mo, proto, target, name, methodTypes, fn) {
   return (target || proto)[name].add(methodTypes, fn)
