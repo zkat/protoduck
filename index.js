@@ -145,7 +145,7 @@ Protocol.meta = Protocol(['a'], {
   addMethod: ['a']
 })
 
-Protocol.meta([Object], {
+Protocol.meta([], {
   createGenfun: _metaCreateGenfun,
   addMethod: _metaAddMethod
 })
