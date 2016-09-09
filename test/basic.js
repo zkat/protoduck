@@ -69,16 +69,24 @@ describe('implementations', function () {
       Eq.eq(1, 1)
     }, /no protocol impl/i)
   })
-  it('errors if number of types don\'t match', function () {
+  it('errors if too many types specified', function () {
     var Eq = protocol(['a', 'b'], {
       eq: ['a', 'b']
     })
     assert.throws(function () {
-      Eq([Number], { eq: function () {} })
-    })
-    assert.throws(function () {
       Eq([Number, String, Number], { eq: function () {} })
     })
+  })
+  it('treats missing types in impls as Object', function () {
+    var Foo = protocol(['a', 'b'], {
+      frob: ['a', 'b']
+    })
+    Foo([Number], { frob: function (n, anything) { return n + anything } })
+    assert.equal(Foo.frob(1, 'two'), '1two')
+    assert.equal(Foo.frob(1, 2), 3)
+    assert.throws(function () {
+      Foo.frob('str', 1)
+    }, /no protocol impl/i)
   })
   it('errors if an extra function is implemented', function () {
     var Eq = protocol(['a'], { eq: ['a', 'a'] })

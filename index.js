@@ -91,10 +91,14 @@ Protocol.impl = function (proto, target, types, implementations) {
     }
   })
   var pTypes = proto._types
-  if (types.length !== pTypes.length) {
-    throw new Error('protocol expects to be defined across ' +
+  if (types.length > pTypes.length) {
+    throw new Error('protocol expects to be defined across at least ' +
                      pTypes.length + ' types, but ' + types.length +
                      ' were specified.')
+  } else if (types.length < pTypes.length) {
+    for (var i = 0; i < pTypes.length - types.length; i++) {
+      types.push(Object)
+    }
   }
   Object.keys(implementations).forEach(function (name) {
     if (proto._methodNames.indexOf(name) === -1) {
