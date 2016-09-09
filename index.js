@@ -3,15 +3,22 @@
 var genfun = require('genfun')
 
 var Protocol = module.exports = function (types, spec, opts) {
-  var proto = function (types, impls) {
-    return Protocol.impl(proto, types, impls)
+  if (Object.getPrototypeOf(types) !== Array.prototype) {
+    // protocol(spec, opts?) syntax for method-based protocols
+    opts = spec
+    spec = types
+    types = []
+  }
+  var proto = function (target, types, impls) {
+    return Protocol.impl(proto, target, types, impls)
   }
   proto._metaobject = opts && opts.metaobject
   proto._types = types
   proto._defaultImpls = {}
   proto._gfTypes = {}
   proto._derivable = true
-  Object.keys(spec).forEach(function (name) {
+  proto._methodNames = Object.keys(spec)
+  proto._methodNames.forEach(function (name) {
     proto[name] = proto._metaobject
     ? Protocol.meta.createGenfun(proto._metaobject, proto, name)
     : _metaCreateGenfun(null, proto, name)
@@ -59,7 +66,20 @@ function installMethodErrorMessage (proto, name) {
 
 Protocol.isDerivable = function (proto) { return proto._derivable }
 
-Protocol.impl = function (proto, types, implementations) {
+Protocol.impl = function (proto, target, types, implementations) {
+  if (Object.getPrototypeOf(target) === Array.prototype) {
+    // Proto([Array], { map() { ... } })
+    implementations = types
+    types = target
+    target = null
+  } else if (types && Object.getPrototypeOf(types) !== Array.prototype) {
+    // Proto(Array, { map() { ... } })
+    implementations = types
+    types = []
+  }
+  if (typeof target === 'function') {
+    target = target.prototype
+  }
   if (!implementations && proto._derivable) {
     implementations = proto._defaultImpls
   }
@@ -77,16 +97,22 @@ Protocol.impl = function (proto, types, implementations) {
                      ' were specified.')
   }
   Object.keys(implementations).forEach(function (name) {
-    if (!proto[name]) {
+    if (proto._methodNames.indexOf(name) === -1) {
       throw new Error('`' + name + '` is not part of the protocol')
     }
+  })
+  proto._methodNames.forEach(function (name) {
     var fn = implementations[name] || proto._defaultImpls[name]
     var methodTypes = calculateMethodTypes(name, proto, types)
-    if (proto._metaobject) {
-      Protocol.meta.addMethod(proto._metaobject, proto, name, methodTypes, fn)
-    } else {
-      _metaAddMethod(null, proto, name, methodTypes, fn)
+    if (target && !target[name]) {
+      target[name] = proto._metaobject
+      ? Protocol.meta.createGenfun(proto._metaobject, proto, target, name)
+      : _metaCreateGenfun(null, proto, target, name)
     }
+
+    proto._metaobject
+    ? Protocol.meta.addMethod(proto._metaobject, proto, target, name, methodTypes, fn)
+    : _metaAddMethod(null, proto, target, name, methodTypes, fn)
   })
 }
 
@@ -97,11 +123,11 @@ function calculateMethodTypes (name, proto, types) {
 }
 
 // MOP
-function _metaCreateGenfun (_mo, proto, name) {
+function _metaCreateGenfun (_mo, proto, target, name) {
   return genfun()
 }
-function _metaAddMethod (_mo, proto, name, methodTypes, fn) {
-  return proto[name].add(methodTypes, fn)
+function _metaAddMethod (_mo, proto, target, name, methodTypes, fn) {
+  return (target || proto)[name].add(methodTypes, fn)
 }
 
 Protocol.meta = Protocol(['a'], {
@@ -109,5 +135,7 @@ Protocol.meta = Protocol(['a'], {
   addMethod: ['a']
 })
 
-Protocol.meta.createGenfun.add([], _metaCreateGenfun)
-Protocol.meta.addMethod.add([], _metaAddMethod)
+Protocol.meta([Object], {
+  createGenfun: _metaCreateGenfun,
+  addMethod: _metaAddMethod
+})
