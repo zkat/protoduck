@@ -1,6 +1,6 @@
 {
   "name": "protoduck",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "Fancy duck typing for the most serious of ducks.",
   "main": "index.js",
   "files": [
