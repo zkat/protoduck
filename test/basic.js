@@ -2,19 +2,27 @@
 var assert = require('assert')
 var protocol = require('../')
 
-describe('types', function () {
-  var Eq = protocol(['a', 'b'], {
-    eq: ['a', 'b'],
-    neq: ['b', 'a']
-  })
+describe('protocol definitions', function () {
   it('collects the protocol types', function () {
+    var Eq = protocol(['a', 'b'], {
+      eq: ['a', 'b'],
+      neq: ['b', 'a']
+    })
     assert.deepEqual(Eq._types, ['a', 'b'])
   })
   it('collects the genfun types and their positions', function () {
+    var Eq = protocol(['a', 'b'], {
+      eq: ['a', 'b'],
+      neq: ['b', 'a']
+    })
     assert.deepEqual(Eq._gfTypes, {
       eq: [0, 1],
       neq: [1, 0]
     })
+  })
+  it('allows omission of types array', function () {
+    var Show = protocol({ show: [] })
+    assert.deepEqual(Show._types, [])
   })
   it('errors if a typespec is invalid', function () {
     assert.throws(function () {
@@ -49,19 +57,17 @@ describe('derivation', function () {
 })
 
 describe('implementations', function () {
-  describe('protocol implementation', function () {
-    it('defines implementations for protocol functions', function () {
-      var Eq = protocol(['a', 'b'], {
-        eq: ['a', 'b']
-      })
-      Eq([Number, Number], {
-        eq: function (a, b) { return a === b }
-      })
-      assert.ok(Eq.eq(1, 1))
-      assert.throws(function () {
-        Eq.eq({}, {})
-      }, /no protocol impl/i)
+  it('defines implementations for protocol functions', function () {
+    var Eq = protocol(['a', 'b'], {
+      eq: ['a', 'b']
     })
+    Eq([Number, Number], {
+      eq: function (a, b) { return a === b }
+    })
+    assert.ok(Eq.eq(1, 1))
+    assert.throws(function () {
+      Eq.eq({}, {})
+    }, /no protocol impl/i)
   })
   it('fails if no matching implementation', function () {
     var Eq = protocol(['a'], { eq: ['a', 'a'] })
