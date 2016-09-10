@@ -24,6 +24,10 @@ describe('protocol definitions', function () {
     var Show = protocol({ show: [] })
     assert.deepEqual(Show._types, [])
   })
+  it('adds the protocol itself to its functions', function () {
+    var Show = protocol({ show: [] })
+    assert.equal(Show.show.protocol, Show, '`.show()` has a reference to Show')
+  })
   it('errors if a typespec is invalid', function () {
     assert.throws(function () {
       protocol(['a'], {

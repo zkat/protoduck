@@ -32,6 +32,16 @@ describe('method-style protocols', function () {
       (1).eq(5)
     }, /Number#eq\(Number\)/i)
   })
+  it('adds the protocol itself to the methods', function () {
+    var Show = protocol({ show: [] })
+    var obj = {}
+    Show(obj, [], {
+      show: function () {
+        assert.equal(this.show.protocol, Show, 'has a reference to Show')
+      }
+    })
+    obj.show()
+  })
   it('allows native method-style impls', function () {
     var Show = protocol({ show: [] })
     var obj = {}

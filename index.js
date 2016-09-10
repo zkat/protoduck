@@ -136,6 +136,7 @@ function calculateMethodTypes (name, proto, types) {
 function _metaCreateGenfun (_mo, proto, target, name) {
   var gf = genfun()
   installMethodErrorMessage(proto, gf, target, name)
+  gf.protocol = proto
   return gf
 }
 function _metaAddMethod (_mo, proto, target, name, methodTypes, fn) {
