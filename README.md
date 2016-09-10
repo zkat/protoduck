@@ -1,17 +1,23 @@
 # Protocols [![Travis](https://img.shields.io/travis/zkat/protocols.svg)](https://travis-ci.org/zkat/protocols) [![npm version](https://img.shields.io/npm/v/@zkat/protocols.svg)](https://npm.im/@zkat/protocols) [![license](https://img.shields.io/npm/l/@zkat/protocols.svg)](https://npm.im/@zkat/protocols)
 
-[`protocols`](https://github.com/zkat/protocols) is a JavaScript library for
-defining and implementing typeclass-like protocols that support dispatch across
-multiple arguments. See also: [Clojure
-protocols](http://clojure.org/reference/protocols) but on any number of types
-across all arguments of the individual functions.
+[`@zkat/protocols`](https://github.com/zkat/protocols) is a JavaScript library
+is a library for making groups of methods, called "protocols", that work
+together to provide some abstract functionality that other things can then rely
+on. If you're familiar with the concept of ["duck
+typing"](https://en.wikipedia.org/wiki/Duck_typing), then it might make sense to
+think of protocols as things that explicitly define what methods you need in
+order to "clearly be a duck".
 
-`protocols` is built on top of [`genfun`](npm.im/genfun), a fast,
-prototype-based multimethod library, but this is mostly all behind the scenes.
+On top of providing a nice, clear interface for defining these protocols, this
+module clear, useful errors when implementations are missing something or doing
+something wrong.
 
-On top of providing a nice, clear interface for defining interfaces, this
-module makes the best effort to verify both protocols and implementations and
-tries to provide clear, useful errors for common mistakes.
+One thing that sets this library apart from others is that on top of defining
+duck-typed protocols on a single class/type, it lets you have different
+implementations depending on the _arguments_. So a method on `Foo` may call
+different code dependent on whether its first _argument_ is `Bar` or `Baz`. If
+you've ever wished a method worked differently for different types of things
+passed to it, this does that!
 
 ## Install
 
@@ -19,9 +25,57 @@ tries to provide clear, useful errors for common mistakes.
 
 ## Table of Contents
 
+* [Example](#example)
 * [API](#api)
   * [`protocol()`](#protocol)
   * [`implementation`](#impl)
+
+### Example
+
+```javascript
+import protocol from "@zkat/protocols"
+
+// Quackable is a protocol that defines three methods
+const Quackable = protocol({
+  walk: [],
+  talk: [],
+  isADuck: []
+})
+
+// `duck` must implement `Quackable` for this function to work. It doesn't
+// matter what type or class duck is, as long as it implements Quackable.
+function doStuffToDucks (duck) {
+  if (!duck.isADuck()) {
+    throw new Error('I want a duck!')
+  } else {
+    console.log(duck.walk())
+    console.log(duck.talk())
+  }
+}
+
+// elsewhere in the project...
+class Person () {}
+
+Quackable(Person, {
+  walk() { return "my knees go the wrong way but I'm doing my best" }
+  talk() { return "uhhh... do I have to? oh... 'Quack' 😒"}
+  isADuck() { return true /* lol I'm totally lying */ }
+})
+
+// and another place...
+class Duck () {}
+
+Quackable(Duck, {
+  walk() { return "*hobble hobble*" }
+  talk() { return "QUACK QUACK" }
+  isADuck() { return true }
+})
+
+// main.js
+doStuffToDucks(new Person()) // works
+doStuffToDucks(new Duck()) // works
+doStuffToDucks({ walk() { return 'meh' } }) // => error
+```
 
 ### API
 
