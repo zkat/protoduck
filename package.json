@@ -1,7 +1,7 @@
 {
-  "name": "@zkat/protocols",
+  "name": "protoduck",
   "version": "2.0.1",
-  "description": "Multi-type protocol-based polymorphism",
+  "description": "Fancy duck typing for the most serious of ducks.",
   "main": "index.js",
   "files": [
     "index.js"
@@ -12,13 +12,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zkat/protocols.git"
+    "url": "git+https://github.com/zkat/protoduck.git"
   },
   "keywords": [
     "oop",
     "util",
-    "object",
-    "oriented",
+    "object oriented",
+    "duck type",
+    "ducktype",
+    "ducktyping",
     "protocols",
     "multimethod",
     "clojure",
@@ -33,9 +35,9 @@
   "author": "Kat Marchán <kzm@sykosomatic.org>",
   "license": "CC0-1.0",
   "bugs": {
-    "url": "https://github.com/zkat/protocols/issues"
+    "url": "https://github.com/zkat/protoduck/issues"
   },
-  "homepage": "https://github.com/zkat/protocols#readme",
+  "homepage": "https://github.com/zkat/protoduck#readme",
   "dependencies": {
     "genfun": "^3.0.0"
   },

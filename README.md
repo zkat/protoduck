@@ -1,9 +1,9 @@
-# Protocols [![Travis](https://img.shields.io/travis/zkat/protocols.svg)](https://travis-ci.org/zkat/protocols) [![npm version](https://img.shields.io/npm/v/@zkat/protocols.svg)](https://npm.im/@zkat/protocols) [![license](https://img.shields.io/npm/l/@zkat/protocols.svg)](https://npm.im/@zkat/protocols)
+# Protoduck [![Travis](https://img.shields.io/travis/zkat/protoduck.svg)](https://travis-ci.org/zkat/protoduck) [![npm version](https://img.shields.io/npm/v/@zkat/protoduck.svg)](https://npm.im/@zkat/protoduck) [![license](https://img.shields.io/npm/l/@zkat/protoduck.svg)](https://npm.im/@zkat/protoduck)
 
-[`@zkat/protocols`](https://github.com/zkat/protocols) is a JavaScript library
-is a library for making groups of methods, called "protocols", that work
-together to provide some abstract functionality that other things can then rely
-on. If you're familiar with the concept of ["duck
+[`protoduck`](https://github.com/zkat/protoduck) is a JavaScript library is a
+library for making groups of methods, called "protocols", that work together to
+provide some abstract functionality that other things can then rely on. If
+you're familiar with the concept of ["duck
 typing"](https://en.wikipedia.org/wiki/Duck_typing), then it might make sense to
 think of protocols as things that explicitly define what methods you need in
 order to "clearly be a duck".
@@ -21,7 +21,7 @@ passed to it, this does that!
 
 ## Install
 
-`$ npm install @zkat/protocols`
+`$ npm install protoduck`
 
 ## Table of Contents
 
@@ -33,7 +33,7 @@ passed to it, this does that!
 ### Example
 
 ```javascript
-import protocol from "@zkat/protocols"
+import protocol from "protoduck"
 
 // Quackable is a protocol that defines three methods
 const Quackable = protocol({
