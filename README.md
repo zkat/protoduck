@@ -26,6 +26,7 @@ passed to it, this does that!
 ## Table of Contents
 
 * [Example](#example)
+* [Features](#features)
 * [API](#api)
   * [`protocol()`](#protocol)
   * [`implementation`](#impl)
@@ -39,7 +40,7 @@ import protocol from "protoduck"
 const Quackable = protocol({
   walk: [],
   talk: [],
-  isADuck: []
+  isADuck: [() => true] // default implementation -- it's optional!
 })
 
 // `duck` must implement `Quackable` for this function to work. It doesn't
@@ -53,29 +54,28 @@ function doStuffToDucks (duck) {
   }
 }
 
-// elsewhere in the project...
-class Person () {}
-
-Quackable(Person, {
-  walk() { return "my knees go the wrong way but I'm doing my best" }
-  talk() { return "uhhh... do I have to? oh... 'Quack' 😒"}
-  isADuck() { return true /* lol I'm totally lying */ }
-})
-
 // and another place...
 class Duck () {}
 
-Quackable(Duck, {
+// Implement the protocol on the Duck class.
+Quackable(Duck, [], {
   walk() { return "*hobble hobble*" }
   talk() { return "QUACK QUACK" }
-  isADuck() { return true }
 })
 
 // main.js
-doStuffToDucks(new Person()) // works
-doStuffToDucks(new Duck()) // works
-doStuffToDucks({ walk() { return 'meh' } }) // => error
+doStuffToDucks(new Duck()) // works!
 ```
+
+### features
+
+* Clear, concise protocol definitions and implementations
+* Verifies implementations in case methods are missing
+* "Static" implementations ("class methods")
+* Optional default method implementations
+* Fresh JavaScript Feel™ -- methods work just like native methods when called
+* Methods can dispatch on arguments, not just `this` ([multimethods](npm.im/genfun))
+* Fast, cached multiple dispatch
 
 ### API
 
