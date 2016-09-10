@@ -8,7 +8,9 @@
   ],
   "scripts": {
     "preversion": "npm t",
-    "test": "standard && nyc -- mocha --reporter spec"
+    "postversion": "npm publish && git push --follow-tags",
+    "pretest": "standard",
+    "test": "nyc -- mocha --reporter spec"
   },
   "repository": {
     "type": "git",
