@@ -1,4 +1,4 @@
-# Protoduck [![Travis](https://img.shields.io/travis/zkat/protoduck.svg)](https://travis-ci.org/zkat/protoduck) [![npm version](https://img.shields.io/npm/v/@zkat/protoduck.svg)](https://npm.im/@zkat/protoduck) [![license](https://img.shields.io/npm/l/@zkat/protoduck.svg)](https://npm.im/@zkat/protoduck)
+# Protoduck [![Travis](https://img.shields.io/travis/zkat/protoduck.svg)](https://travis-ci.org/zkat/protoduck) [![npm version](https://img.shields.io/npm/v/protoduck.svg)](https://npm.im/protoduck) [![license](https://img.shields.io/npm/l/protoduck.svg)](https://npm.im/protoduck)
 
 [`protoduck`](https://github.com/zkat/protoduck) is a JavaScript library is a
 library for making groups of methods, called "protocols", that work together to
