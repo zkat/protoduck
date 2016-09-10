@@ -53,12 +53,14 @@ function installMethodErrorMessage (proto, gf, target, name) {
   Protocol.noImplFound.add([gf], function (gf, thisArg, args) {
     var msg =
     'No ' + (proto.name || 'protocol') + ' impl for `' +
+    (target ? typeName(thisArg) + '#' : '') +
     name +
-    '` found for arguments of types: (' +
-    [].map.call(args, typeName).join(', ') + ')'
-    if (target) {
-      msg += ' and `this` type ' + typeName(thisArg)
-    }
+    '(' +
+    [].map.call(args, typeName).join(', ') + ')`'
+    msg += '\n\n'
+    msg += 'You must implement '
+    msg += (proto.name || 'the protocol `' + name + '` belongs to')
+    msg += ' in order to call `' + name + '` with these arguments.\n'
     var err = new Error(msg)
     err.protocol = proto
     err.function = gf

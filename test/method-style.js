@@ -30,7 +30,7 @@ describe('method-style protocols', function () {
     Eq(Number, [String], { eq: function (s) { return this === s } })
     assert.throws(function () {
       (1).eq(5)
-    }, /and `this` type Number/i)
+    }, /Number#eq\(Number\)/i)
   })
   it('allows native method-style impls', function () {
     var Show = protocol({ show: [] })
