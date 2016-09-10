@@ -87,7 +87,6 @@ will expect implementations for the functions specified in `<spec>`.
 If `<types>` is missing, it will be treated the same as if it were an empty
 array.
 
-
 The types in `<spec>` must map, by string name, to the type names specified in
 `<types>`, or be an empty array if `<types>` is omitted. The types in `<spec>`
 will then be used to map between method implementations for the individual
