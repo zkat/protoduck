@@ -112,7 +112,7 @@ Protocol.impl = function (proto, target, types, implementations) {
   proto._methodNames.forEach(function (name) {
     var fn = implementations[name] || proto._defaultImpls[name]
     var methodTypes = calculateMethodTypes(name, proto, types)
-    if (target && !target[name]) {
+    if (target != null && !{}.hasOwnProperty.call(target, name)) {
       target[name] = proto._metaobject
       ? Protocol.meta.createGenfun(proto._metaobject, proto, target, name)
       : _metaCreateGenfun(null, proto, target, name)
