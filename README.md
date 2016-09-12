@@ -311,7 +311,7 @@ will be automatically derived for the given `<types>`
 ##### Example
 
 ```javascript
-import protocol from '@zkat/protocols'
+import protocol from 'protoduck'
 
 // Singly-dispatched protocols
 const Show = protocol({
@@ -330,7 +330,7 @@ f.show() === '[object Foo(alex)]'
 ```
 
 ```javascript
-import protocol from '@zkat/protocols'
+import protocol from 'protoduck'
 
 // Multi-dispatched protocols
 const Comparable = protocol(['target'], {
