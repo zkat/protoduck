@@ -72,6 +72,30 @@ function installMethodErrorMessage (proto, gf, target, name) {
 
 Protocol.isDerivable = function (proto) { return proto._derivable }
 
+Protocol.hasImpl = function (proto, arg, args) {
+  args = args || []
+  if (Object.getPrototypeOf(arg) === Array.prototype) {
+    args = arg
+    arg = null
+  }
+  var fns = proto._methodNames
+  var gf
+  for (var i = 0; i < fns.length; i++) {
+    if (arg) {
+      gf = arg[fns[i]]
+    } else {
+      gf = proto[fns[i]]
+    }
+    if (!gf ||
+        (gf.hasMethod
+        ? !gf.hasMethod.apply(gf, args)
+        : typeof gf === 'function')) {
+      return false
+    }
+  }
+  return true
+}
+
 Protocol.impl = function (proto, target, types, implementations) {
   if (Object.getPrototypeOf(target) === Array.prototype) {
     // Proto([Array], { map() { ... } })
