@@ -3,7 +3,7 @@
 var genfun = require('genfun')
 
 var Protocol = module.exports = function (types, spec, opts) {
-  if (Object.getPrototypeOf(types) !== Array.prototype) {
+  if (!isArray(types)) {
     // protocol(spec, opts?) syntax for method-based protocols
     opts = spec
     spec = types
@@ -74,7 +74,7 @@ Protocol.isDerivable = function (proto) { return proto._derivable }
 
 Protocol.hasImpl = function (proto, arg, args) {
   args = args || []
-  if (Object.getPrototypeOf(arg) === Array.prototype) {
+  if (isArray(arg)) {
     args = arg
     arg = null
   }
@@ -97,12 +97,12 @@ Protocol.hasImpl = function (proto, arg, args) {
 }
 
 Protocol.impl = function (proto, target, types, implementations) {
-  if (Object.getPrototypeOf(target) === Array.prototype) {
+  if (isArray(target)) {
     // Proto([Array], { map() { ... } })
     implementations = types
     types = target
     target = null
-  } else if (types && Object.getPrototypeOf(types) !== Array.prototype) {
+  } else if (types && !isArray(types)) {
     // Proto(Array, { map() { ... } })
     implementations = types
     types = []
@@ -176,3 +176,7 @@ Protocol.meta([], {
   createGenfun: _metaCreateGenfun,
   addMethod: _metaAddMethod
 })
+
+function isArray (x) {
+  return Object.prototype.toString.call(x) === '[object Array]'
+}
