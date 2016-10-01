@@ -81,6 +81,7 @@ doStuffToDucks(new Duck()) // works!
 * Optional default method implementations
 * Fresh JavaScript Feel™ -- methods work just like native methods when called
 * Methods can dispatch on arguments, not just `this` ([multimethods](npm.im/genfun))
+* Unambiguous, `Symbol`-keyed methods, with optional 'private' implementations
 * Fast, cached multiple dispatch
 
 ### Guide
@@ -264,7 +265,7 @@ equals(1, snookums) // Error! No protocol impl!
 
 ### API
 
-#### <a name="protocol"></a> `protocol(<types>?, <spec>)`
+#### <a name="protocol"></a> `protocol(<types>?, <spec>, <opts>)`
 
 Defines a new protocol on across arguments of types defined by `<types>`, which
 will expect implementations for the functions specified in `<spec>`.
@@ -276,6 +277,18 @@ The types in `<spec>` must map, by string name, to the type names specified in
 `<types>`, or be an empty array if `<types>` is omitted. The types in `<spec>`
 will then be used to map between method implementations for the individual
 functions, and the provided types in the impl.
+
+Protocols can include an `opts` object as the last argument, with the following
+available options:
+
+* `opts.private` `{Boolean=false}` - if true, method-style definitions will not
+  add the methods by name to the target object. Implementation methods can still
+  be accessed by using `<obj>[<protocol>.<methName>.symbol]`. This will make
+  implementations usable for internals without potential name conflicts.
+
+* `opts.metaobject` `{Protocol.meta}` - Accepts an object implementing the
+  `Protocol.meta` protocol, which can be used to alter protocol definition
+  mechanisms in `protoduck`.
 
 ##### Example
 
