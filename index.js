@@ -13,6 +13,7 @@ var Protocol = module.exports = function (types, spec, opts) {
     return Protocol.impl(proto, target, types, impls)
   }
   proto._metaobject = opts && opts.metaobject
+  proto._private = opts && opts.private
   proto._types = types
   proto._defaultImpls = {}
   proto._gfTypes = {}
@@ -138,10 +139,14 @@ Protocol.impl = function (proto, target, types, implementations) {
   proto._methodNames.forEach(function (name) {
     var fn = implementations[name] || proto._defaultImpls[name]
     var methodTypes = calculateMethodTypes(name, proto, types)
-    if (target != null && !{}.hasOwnProperty.call(target, name)) {
-      target[name] = proto._metaobject
+    if (target != null && !{}.hasOwnProperty.call(target, proto[name].symbol)) {
+      var gf = proto._metaobject
       ? Protocol.meta.createGenfun(proto._metaobject, proto, target, name)
       : _metaCreateGenfun(null, proto, target, name)
+      target[gf.symbol] = gf
+      if (!proto._private) {
+        target[name] = gf
+      }
     }
 
     proto._metaobject
@@ -161,10 +166,23 @@ function _metaCreateGenfun (_mo, proto, target, name) {
   var gf = genfun()
   installMethodErrorMessage(proto, gf, target, name)
   gf.protocol = proto
+  if (proto[name] && proto[name].symbol) {
+    gf.symbol = proto[name].symbol
+  } else {
+    gf.symbol = typeof Symbol === 'undefined'
+    ? ('__protoduck_label_' + name + '_' + proto.toString() + '__')
+    : Symbol(name)
+  }
   return gf
 }
 function _metaAddMethod (_mo, proto, target, name, methodTypes, fn) {
-  return (target || proto)[name].add(methodTypes, fn)
+  var gf
+  if (target) {
+    gf = target[proto[name].symbol]
+  } else {
+    gf = proto[name]
+  }
+  return gf.add(methodTypes, fn)
 }
 
 Protocol.meta = Protocol(['a'], {
