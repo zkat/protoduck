@@ -11,11 +11,30 @@ describe('method-style protocols', function () {
   it('adds genfuns as methods if a target is specified', function () {
     var p = protocol({ map: [] })
     var obj1 = {}
-    var obj2 = {}
+    var obj2 = { map: function () { return 'wrong' } }
     p(obj1, { map: function () { return 'one' } })
     p(obj2, { map: function () { return 'two' } })
-    assert.equal(obj1.map(), 'one')
-    assert.equal(obj2.map(), 'two')
+    assert.equal(obj1.map(), 'one', 'defines a new method-genfun')
+    assert.equal(obj2.map(), 'two', 'overrides existing methods by default')
+  })
+  it('defines unambiguous reference names for methods', function () {
+    var p = protocol({ map: [] })
+    var obj = {}
+    p(obj, { map: function () { return 'success' } })
+    assert.equal(obj[p.map.symbol](), 'success', 'method works normally')
+    assert.equal(obj[p.map.symbol], obj.map, 'same genfun')
+  })
+  it('allows private definitions, to only use symbols', function () {
+    var p = protocol({ map: [], empty: [] }, { private: true })
+    var obj = { empty: 'yup' }
+    p(obj, {
+      map: function () { return 'map' },
+      empty: function () { return 'empty' }
+    })
+    assert.equal(obj[p.map.symbol](), 'map', 'map works normally')
+    assert.equal(obj[p.empty.symbol](), 'empty', 'empty works normally')
+    assert.equal(obj.map, undefined, 'map not defined directly')
+    assert.equal(obj.empty, 'yup', 'empty not overridden')
   })
   it('uses "default" genfun objects when only types specified', function () {
     var p = protocol(['f'], { map: ['f'] })
