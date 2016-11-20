@@ -1,7 +1,7 @@
 # Protoduck [![Travis](https://img.shields.io/travis/zkat/protoduck.svg)](https://travis-ci.org/zkat/protoduck) [![npm version](https://img.shields.io/npm/v/protoduck.svg)](https://npm.im/protoduck) [![license](https://img.shields.io/npm/l/protoduck.svg)](https://npm.im/protoduck)
 
-[`protoduck`](https://github.com/zkat/protoduck) is a JavaScript library is a
-library for making groups of methods, called "protocols", that work together to
+[`protoduck`](https://github.com/zkat/protoduck) is a JavaScript library
+for making groups of methods, called "protocols", that work together to
 provide some abstract functionality that other things can then rely on. If
 you're familiar with the concept of ["duck
 typing"](https://en.wikipedia.org/wiki/Duck_typing), then it might make sense to
@@ -9,7 +9,7 @@ think of protocols as things that explicitly define what methods you need in
 order to "clearly be a duck".
 
 On top of providing a nice, clear interface for defining these protocols, this
-module clear, useful errors when implementations are missing something or doing
+module gives clear, useful errors when implementations are missing something or doing
 something wrong.
 
 One thing that sets this library apart from others is that on top of defining
@@ -103,7 +103,7 @@ that things definitely need to have under a protocol, and then write your code
 using the methods defined there. The assumption is that anything that defines
 that group of methods will work with the rest of your code.
 
-And then you can export the protocol itself, and tell your users "if you
+Then you can export the protocol itself, and tell your users "if you
 implement this protocol for your own objects, they'll work with my code."
 
 Duck typing is a common term for this: If it walks like a duck, and it talks
@@ -167,7 +167,7 @@ pupper.peck('this string') // Can I just bite this string instead?...
 #### Multiple Dispatch
 
 You may have noticed before that we have these `[]` in various places that don't
-seem to have any obvious purpose.
+seem to have any obvious purpose. 
 
 These arrays allow protocols to be implemented not just for a single value of
 `this`, but across *all arguments*. That is, you can have methods in these
@@ -223,17 +223,17 @@ some tricks you might realize you can do that weren't possible before!
 #### Static impls
 
 Finally, there's a type of protocol impl that doesn't involve a `this` value at
-all: static impls. Some languages might call them "class methods" as well. In
+all: static impls. Some languages might call them "class methods". In
 the case of `protoduck`, though, these static methods exist on the protocol
 object itself, rather than a regular JavaScript class.
 
 Static methods can be really useful when you want to call them as plain old
-functions without having to worry about the `this` value. And because
+functions without having to worry about the `this` value. Because
 `protoduck` supports multiple dispatch, it means you can get full method
 functionality, but with regular functions that don't need `this`: they just
 operate on their standard arguments.
 
-Static impls are easy to make: simply omit the first object type and use the
+Static impls are easy to make: omit the first object type and use the
 arguments array to define what the methods will be implemented on:
 
 ```javascript
