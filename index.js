@@ -169,9 +169,7 @@ function _metaCreateGenfun (_mo, proto, target, name) {
   if (proto[name] && proto[name].symbol) {
     gf.symbol = proto[name].symbol
   } else {
-    gf.symbol = typeof Symbol === 'undefined'
-    ? ('__protoduck_label_' + name + '_' + proto.toString() + '__')
-    : Symbol(name)
+    gf.symbol = Symbol(name)
   }
   return gf
 }
