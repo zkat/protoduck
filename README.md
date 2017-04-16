@@ -21,7 +21,7 @@ passed to it, this does that!
 
 ## Install
 
-`$ npm install protoduck`
+`$ npm install -S protoduck`
 
 ## Table of Contents
 
