@@ -71,13 +71,13 @@ describe('implementations', function () {
     assert.ok(Eq.eq(1, 1))
     assert.throws(function () {
       Eq.eq({}, {})
-    }, /no protocol impl/i)
+    }, /no proto impl/i)
   })
   it('fails if no matching implementation', function () {
     var Eq = protocol(['a'], { eq: ['a', 'a'] })
     assert.throws(function () {
       Eq.eq(1, 1)
-    }, /no protocol impl/i)
+    }, /no proto impl/i)
   })
   it('errors if too many types specified', function () {
     var Eq = protocol(['a', 'b'], {
@@ -96,7 +96,7 @@ describe('implementations', function () {
     assert.equal(Foo.frob(1, 2), 3)
     assert.throws(function () {
       Foo.frob('str', 1)
-    }, /no protocol impl/i)
+    }, /no proto impl/i)
   })
   it('errors if an extra function is implemented', function () {
     var Eq = protocol(['a'], { eq: ['a', 'a'] })

@@ -117,8 +117,8 @@ describe('method-style protocols', function () {
       equals: function () { return 'parent#equals(parent)' }
     })
     Eq(parent, [child], {
-      equals: function () {
-        var parentReturn = this.equals.callNextMethod()
+      equals: function (c, nextMethod) {
+        var parentReturn = nextMethod()
         return parentReturn.replace(/\(parent\)/, '(child)')
       }
     })
