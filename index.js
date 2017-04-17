@@ -2,20 +2,7 @@
 
 const genfun = require('genfun')
 
-class Duck {
-  constructor (types, spec, opts) {
-    this.isDerivable = true
-    this.name = opts && opts.name
-    this._metaobject = opts && opts.metaobject
-    this._types = types
-    this._defaultImpls = {}
-    this._gfTypes = {}
-    this._methodNames = Object.keys(spec)
-    this._methodNames.forEach(name => {
-      checkMethodSpec(this, name, spec)
-    })
-  }
-
+class Duck extends Function {
   // Duck.impl(Foo, [String, Array], { frob (str, arr) { ... }})
   impl (target, types, impls) {
     if (!impls && !isArray(types)) {
@@ -33,6 +20,15 @@ class Duck {
     }
     checkImpls(this, target, impls)
     checkArgTypes(this, types)
+    this._constraints.forEach(c => {
+      if (!c.verify(target, types)) {
+        throw new Error(`Implementations of ${
+          this.name || 'this protocol'
+        } must first implement ${
+          c.parent.name || 'its constraint protocols defined in opts.where.'
+        }`)
+      }
+    })
     this._methodNames.forEach(name => {
       defineMethod(this, name, target, types, impls)
     })
@@ -42,6 +38,16 @@ class Duck {
     args = args || []
     const fns = this._methodNames
     var gf
+    if (typeof arg === 'function' && !arg.isGenfun) {
+      arg = arg.prototype
+    }
+    args = args.map(arg => {
+      if (typeof arg === 'function' && !arg.isGenfun) {
+        return arg.prototype
+      } else {
+        return arg
+      }
+    })
     for (var i = 0; i < fns.length; i++) {
       gf = arg[fns[i]]
       if (!gf ||
@@ -53,11 +59,28 @@ class Duck {
     }
     return true
   }
+
+  // MyDuck.matches('a', ['this', 'c'])
+  matches (thisType, argTypes) {
+    if (!argTypes && isArray(thisType)) {
+      argTypes = thisType
+      thisType = 'this'
+    }
+    if (!thisType) {
+      thisType = 'this'
+    }
+    if (!argTypes) {
+      argTypes = []
+    }
+    return new Constraint(this, thisType, argTypes)
+  }
 }
+Duck.prototype.isDuck = true
+Duck.prototype.isProtocol = true
 
 const Protoduck = module.exports = define(['duck'], {
-  createGenfun: ['duck'],
-  addMethod: ['duck']
+  createGenfun: ['duck', _metaCreateGenfun],
+  addMethod: ['duck', _metaAddMethod]
 }, {name: 'Protoduck'})
 
 const noImplFound = module.exports.noImplFound = genfun.noApplicableMethod
@@ -70,7 +93,35 @@ function define (types, spec, opts) {
     spec = types
     types = []
   }
-  return new Duck(types, spec, opts)
+  const duck = function (thisType, argTypes) {
+    return duck.matches(thisType, argTypes)
+  }
+  Object.setPrototypeOf(duck, Duck.prototype)
+  duck.isDerivable = true
+  Object.defineProperty(duck, 'name', {
+    value: (opts && opts.name) || 'Protocol'
+  })
+  if (opts && opts.where) {
+    let where = opts.where
+    if (!isArray(opts.where)) { where = [opts.where] }
+    duck._constraints = where.map(w => w.isProtocol // `where: [Foo]`
+      ? w.matches()
+      : w
+    )
+  } else {
+    duck._constraints = []
+  }
+  duck.isProtocol = true
+  duck._metaobject = opts && opts.metaobject
+  duck._types = types
+  duck._defaultImpls = {}
+  duck._gfTypes = {}
+  duck._methodNames = Object.keys(spec)
+  duck._methodNames.forEach(name => {
+    checkMethodSpec(duck, name, spec)
+  })
+  duck._constraints.forEach(c => c.attach(duck))
+  return duck
 }
 
 function checkMethodSpec (duck, name, spec) {
@@ -102,8 +153,16 @@ function defineMethod (duck, name, target, types, impls) {
   const methodTypes = duck._gfTypes[name].map(function (typeIdx) {
     return types[typeIdx]
   })
+  for (let i = methodTypes.length - 1; i >= 0; i--) {
+    if (methodTypes[i] === undefined) {
+      methodTypes.pop()
+    } else {
+      break
+    }
+  }
   const useMetaobject = duck._metaobject && duck._metaobject !== Protoduck
-  if (!target[name]) {
+  // `target` does not necessarily inherit from `Object`
+  if (!Object.prototype.hasOwnProperty.call(target, name)) {
     // Make a genfun if there's nothing there
     const gf = useMetaobject
     ? duck._metaobject.createGenfun(duck, target, name, null)
@@ -175,12 +234,6 @@ function checkArgTypes (duck, types) {
         types.length
       } ${types.length > 1 ? 'were' : 'was'} specified.`
     )
-  } else if (types.length < requiredTypes.length) {
-    // Assume missing types are intended to be Object
-    const missing = requiredTypes.length - types.length
-    for (var i = 0; i < missing; i++) {
-      types.push(Object)
-    }
   }
 }
 
@@ -190,6 +243,12 @@ function typeName (obj) {
 
 function installMethodErrorMessage (proto, gf, target, name) {
   noImplFound.add([gf], function (gf, thisArg, args) {
+    let parent = Object.getPrototypeOf(thisArg)
+    while (parent && parent[name] === gf) {
+      parent = Object.getPrototypeOf(parent)
+    }
+    if (parent && parent[name] && typeof parent[name] === 'function') {
+    }
     var msg = `No ${typeName(thisArg)} impl for ${
       proto.name ? `${proto.name}#` : ''
     }${name}(${[].map.call(args, typeName).join(', ')}). You must implement ${
@@ -214,10 +273,7 @@ function isArray (x) {
 }
 
 // Metaobject Protocol
-Protoduck.impl(Protoduck, {
-  createGenfun: _metaCreateGenfun,
-  addMethod: _metaAddMethod
-})
+Protoduck.impl(Protoduck) // defaults configured by definition
 
 function _metaCreateGenfun (proto, target, name, deflt) {
   var gf = genfun({
@@ -229,6 +285,62 @@ function _metaCreateGenfun (proto, target, name, deflt) {
   return gf
 }
 
-function _metaAddMethod (proto, target, name, methodTypes, fn) {
+function _metaAddMethod (duck, target, name, methodTypes, fn) {
   return target[name].add(methodTypes, fn)
 }
+
+// Constraints
+class Constraint {
+  constructor (parent, thisType, argTypes) {
+    this.parent = parent
+    this.target = thisType
+    this.types = argTypes
+  }
+
+  attach (obj) {
+    this.child = obj
+    if (this.target === 'this') {
+      this.thisIdx = 'this'
+    } else {
+      const idx = this.child._types.indexOf(this.target)
+      if (idx === -1) {
+        this.thisIdx = null
+      } else {
+        this.thisIdx = idx
+      }
+    }
+    this.indices = this.types.map(typeId => {
+      if (typeId === 'this') {
+        return 'this'
+      } else {
+        const idx = this.child._types.indexOf(typeId)
+        if (idx === -1) {
+          return null
+        } else {
+          return idx
+        }
+      }
+    })
+  }
+
+  verify (target, types) {
+    const thisType = (
+      this.thisIdx === 'this' || this.thisIdx == null
+    )
+    ? target
+    : types[this.thisIdx]
+    const parentTypes = this.indices.map(idx => {
+      if (idx === 'this') {
+        return target
+      } else if (idx === 'this') {
+        return types[this.thisIdx]
+      } else if (idx === null) {
+        return Object
+      } else {
+        return types[idx] || Object.prototype
+      }
+    })
+    return this.parent.hasImpl(thisType, parentTypes)
+  }
+}
+Constraint.prototype.isConstraint = true
