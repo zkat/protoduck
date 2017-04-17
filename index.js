@@ -125,8 +125,11 @@ function define (types, spec, opts) {
 }
 
 function checkMethodSpec (duck, name, spec) {
-  const gfTypes = spec[name]
-  if (typeof gfTypes[gfTypes.length - 1] === 'function') {
+  let gfTypes = spec[name]
+  if (typeof gfTypes === 'function') {
+    duck._defaultImpls[name] = gfTypes
+    gfTypes = [gfTypes]
+  } if (typeof gfTypes[gfTypes.length - 1] === 'function') {
     duck._defaultImpls[name] = gfTypes.pop()
   } else {
     duck.isDerivable = false
