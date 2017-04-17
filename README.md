@@ -21,6 +21,7 @@ order to "clearly be a duck".
   * [Defining protocols](#defining-protocols)
   * [Implementations](#protocol-impls)
   * [Multiple dispatch](#multiple-dispatch)
+  * [Constraints](#constraints)
 * [API](#api)
   * [`define()`](#define)
   * [`proto.impl()`](#impl)
