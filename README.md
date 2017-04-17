@@ -70,36 +70,36 @@ ducks.doStuffToDucks(new Duck()) // works!
 * Optional default method implementations
 * Fresh JavaScript Feel™ -- methods work just like native methods when called
 * Methods can dispatch on arguments, not just `this` ([multimethods](https://npm.im/genfun))
+* Type constraints
 
 ### Guide
 
 #### Introduction
 
-JavaScript comes with its own method definition mechanism: You simply add
-regular `function`s as properties to regular objects, and when you do
-`obj.method()`, it calls the right code! ES6/ES2015 further extended this by
-adding a `class` syntax that allowed this same system to work with more familiar
-syntax sugar: `class Foo { method() { ... } }`.
+Like most Object-oriented languages, JavaScript comes with its own way of
+defining methods: You simply add regular `function`s as properties to regular
+objects, and when you do `obj.method()`, it calls the right code! ES6/ES2015
+further extended this by adding a `class` syntax that allowed this same system
+to work with more familiar syntax sugar: `class Foo { method() { ... } }`.
 
-`protoduck` is a similar *language extension*: it adds something called
-"protocols" to JavaScript.
+The point of "protocols" is to have a more explicit definitions of what methods
+"go together". That is, a protocol is a description of a type of object your
+code interacts with. If someone passes an object into your library, and it fits
+your defined protocol, the assumption is that the object will work just as well.
 
-The purpose of protocols is to have a more explicit definitions of what methods
-"go together". That is, if you have a type of task, you can group every method
-that things definitely need to have under a protocol, and then write your code
-using the methods defined there. The assumption is that anything that defines
-that group of methods will work with the rest of your code.
-
-And then you can export the protocol itself, and tell your users "if you
-implement this protocol for your own objects, they'll work with my code."
-
-Duck typing is a common term for this: If it walks like a duck, and it talks
-like a duck, then it may as well be a duck, as far as any of our code is
-concerned.
+Duck typing is a common term for this sort of thing: If it walks like a duck,
+and it talks like a duck, then it may as well be a duck, as far as any of our
+code is concerned.
 
 Many other languages have similar or identical concepts under different names:
 Java's interfaces, Haskell's typeclasses, Rust's traits. Elixir and Clojure both
-call them "protocols" as well. It's a really handy abstraction!
+call them "protocols" as well.
+
+One big advantage to using these protocols is that they let users define their
+own versions of some abstraction, without requiring the type to inherit from
+another -- protocols are independent of inheritance, even though they're able to
+work together with it. If you've ever found yourself in some sort of inheritance
+mess, this is exactly the sort of thing you use to escape it.
 
 #### Defining Protocols
 
@@ -204,6 +204,48 @@ cat.playWith(human) // *headbutt* *purr* *cuddle* omg ilu, Sam
 cat.playWith(dog) // *scratches* *hisses* omg i h8 u, Pupper
 ```
 
+#### Constraints
+
+Sometimes, you want to have all the functionality of a certain protocol, but you
+want to add a few requirements or other bits an pieces. Usually, you would have
+to define the entire functionality of the "parent" protocol in your own protocol
+in order to pull this off. This isn't very DRY and thus prone to errors, missing
+or out-of-sync functionality, or other issues. You could also just tell users
+"hey, if you implement this, make sure to implement that", but there's no
+guarantee they'll know about it, or know which arguments map to what.
+
+This is where constraints come in: You can define a protocol that expects
+anything that implements it to *also* implement one or more "parent" protocols.
+
+```javascript
+const Show = proto.define({
+  // This syntax allows default impls without using arrays.
+  toString () {
+    return Object.prototype.toString.call(this)
+  },
+  toJSON () {
+    return JSON.stringify(this)
+  }
+})
+
+const Log = proto.define({
+  log () { console.log(this.toString()) }
+}, {
+  where: Show()
+  // Also valid:
+  // [Show('this'), Show('a')]
+  // [Show('this', ['a', 'b'])]
+})
+
+// This fails with an error: must implement Show:
+Log.impl(MyThing)
+
+// So derive Show first...
+Show.impl(MyThing)
+// And now it's ok!
+Log.impl(MyThing)
+```
+
 ### API
 
 #### <a name="define"></a> `define(<types>?, <spec>, <opts>)`
@@ -223,6 +265,8 @@ Protocols can include an `opts` object as the last argument, with the following
 available options:
 
 * `opts.name` `{String}` - The name to use when referring to the protocol.
+
+* `opts.where` `{Array[Constraint]|Constraint}` - Protocol constraints to use.
 
 * `opts.metaobject` - Accepts an object implementing the
   `Protoduck` protocol, which can be used to alter protocol definition
