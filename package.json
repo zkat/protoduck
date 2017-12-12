@@ -40,7 +40,7 @@
     "traits"
   ],
   "author": "Kat Marchán <kzm@sykosomatic.org>",
-  "license": "CC0-1.0",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/zkat/protoduck/issues"
   },
