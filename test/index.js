@@ -39,13 +39,13 @@ test('derivation', t => {
   const Show = duck.define(['exemplar'], {
     show: ['exemplar'],
     meh: [function () {}]
-  }, {name: 'Show'})
+  }, { name: 'Show' })
   t.notOk(Show.isDerivable, 'disallows derivation if any fns have no defaults')
   t.throws(() => {
     Show.impl(obj, [obj])
   }, /Missing implementation for Show#show\(exemplar\)/)
 
-  const withShow = {show () { return 'success' }}
+  const withShow = { show () { return 'success' } }
   Show.impl(withShow)
   t.equal(withShow.show(), 'success', 'default method used')
   t.ok(withShow.show.isGenfun, 'method converted to genfun')
@@ -55,7 +55,7 @@ test('derivation', t => {
 test('defines implementations for protocol functions', t => {
   const Eq = duck.define(['a'], {
     eq: ['a']
-  }, {name: 'Eq'})
+  }, { name: 'Eq' })
   class Obj {}
   Eq.impl(Obj, [Obj], {
     eq (a) { return this === a }
@@ -83,7 +83,7 @@ test('errors if too many types specified', t => {
 test('treats missing types in impls as Object', t => {
   const Foo = duck.define(['a', 'b'], {
     frob: ['a', 'b']
-  }, {name: 'Foo'})
+  }, { name: 'Foo' })
   Foo.impl(Number, [Number], {
     frob (n, anything) {
       return this + n + anything
@@ -98,7 +98,7 @@ test('treats missing types in impls as Object', t => {
 })
 
 test('errors if an extra function is implemented', t => {
-  const Eq = duck.define(['a'], { eq: ['a'] }, {name: 'Eq'})
+  const Eq = duck.define(['a'], { eq: ['a'] }, { name: 'Eq' })
   t.throws(() => {
     Eq.impl(Number, [Number], { eq () {}, extra () {} })
   }, /extra\(\) was included in the impl, but is not part of Eq/i)
@@ -106,7 +106,7 @@ test('errors if an extra function is implemented', t => {
 })
 
 test('errors if a function without a default is not implemented', t => {
-  const Eq = duck.define(['a'], { eq: ['a'] }, {name: 'Eq'})
+  const Eq = duck.define(['a'], { eq: ['a'] }, { name: 'Eq' })
   const obj = {}
   t.throws(function () {
     Eq.impl(obj, [obj], { })

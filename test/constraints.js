@@ -7,7 +7,7 @@ const duck = require('..')
 test('basic constraint definitions', t => {
   const Functor = duck.define(['f'], {
     map: ['f']
-  }, {name: 'Functor'})
+  }, { name: 'Functor' })
 
   const Apply = duck.define(['b'], {
     ap: ['b']
@@ -55,7 +55,7 @@ test('basic constraint definitions', t => {
 test('`this` as type identifier', t => {
   const Foo = duck.define(['a'], {
     frob: ['a']
-  }, {name: 'Foo'})
+  }, { name: 'Foo' })
   const Bar = duck.define(['b'], {
     frab: ['b']
   }, {
@@ -94,7 +94,7 @@ test('`this` as type identifier', t => {
 test('shorthand constraints', t => {
   const Functor = duck.define(['f'], {
     map: ['f']
-  }, {name: 'Functor'})
+  }, { name: 'Functor' })
   const Apply = duck.define(['f'], {
     ap: ['f']
   }, {

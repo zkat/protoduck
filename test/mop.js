@@ -16,9 +16,9 @@ test('MOP: createGenfun', t => {
   })
   const Show = duck.define({
     show: []
-  }, {metaobject})
+  }, { metaobject })
   const obj = {}
-  Show.impl(obj, {show () { return 'ok' }})
+  Show.impl(obj, { show () { return 'ok' } })
   t.equal(obj.show(), 'ok', 'method defined correctly')
   t.deepEqual(obj.show.duck, null, 'no duck property')
   t.equal(obj.show.metaProp, 'hello', 'extra prop added to gf')
@@ -36,9 +36,9 @@ test('MOP: addMethod', t => {
   })
   const Show = duck.define({
     show: []
-  }, {metaobject})
+  }, { metaobject })
   const obj = {}
-  Show.impl(obj, {show () { return 'ok' }})
+  Show.impl(obj, { show () { return 'ok' } })
   t.equal(obj.show(), 'ok', 'method defined correctly')
 })
 
@@ -54,9 +54,9 @@ test('MOP: Protoduck as metaobject', t => {
   })
   const Show = duck.define({
     show: []
-  }, {metaobject})
+  }, { metaobject })
   const obj = {}
-  Show.impl(obj, {show () { return 'ok' }})
+  Show.impl(obj, { show () { return 'ok' } })
   t.equal(obj.show(), 'ok', 'method defined correctly')
   t.equal(obj.show.duck, Show, 'duck property is there')
   t.ok(true, 'none of the declared methods executed when meta === Protoduck')
